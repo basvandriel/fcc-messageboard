@@ -14,6 +14,24 @@ app.use('/public', express.static(process.cwd() + '/public'));
 
 app.use(cors({origin: '*'})); //For FCC testing purposes only
 
+app.use(
+  helmet.frameguard({
+    action: "sameorigin",
+  })
+);
+// Sets "X-DNS-Prefetch-Control: off"
+app.use(
+  helmet.dnsPrefetchControl({
+    allow: false,
+  })
+);
+// Sets "Referrer-Policy: origin"
+app.use(
+  helmet.referrerPolicy({
+    policy: "origin",
+  })
+);
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
