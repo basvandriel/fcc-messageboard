@@ -9,6 +9,7 @@ const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
 
 const helmet = require('helmet')
+const mongoose = require('mongoose')
 
 const app = express();
 
@@ -52,6 +53,14 @@ app.route('/')
   .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
   });
+
+mongoose.connect(process.env.DB, { useUnifiedTopology: true, useNewUrlParser: true });
+
+const connection = mongoose.connection;
+
+connection.once("open", function() {
+  console.log("MongoDB database connection established successfully");
+});
 
 //For FCC testing purposes
 fccTestingRoutes(app);
