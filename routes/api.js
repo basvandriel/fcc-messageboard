@@ -89,4 +89,19 @@ module.exports = function (app) {
     return response.json('ok')
   });
 
+  // You can send a DELETE request to /api/threads/{board} and pass along the thread_id & delete_password to delete the thread.
+  //  Returned will be the string incorrect password or success.
+  app.route("/api/threads/:board").delete(upload.none(), async (request, response) => {
+    const { thread_id, delete_password } = request.body
+
+    if(!thread_id || !delete_password) {
+      return response.json("thread_id || delete_password not found")
+    }
+    const payload = await Thread.findOneAndDelete({ _id: thread_id, delete_password });
+
+    if (!payload) {
+      return response.json("incorrect password")
+    }
+    return response.json(succes);
+  })
 };
