@@ -7,10 +7,9 @@ const cors        = require('cors');
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
+const connect = require('./lib/db')
 
 const helmet = require('helmet')
-const mongoose = require('mongoose')
-const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const app = express();
 
@@ -56,11 +55,7 @@ app.route('/')
   });
 
 
-const connection = mongoose.connection;
 
-connection.once("open", function() {
-  console.log("MongoDB database connection established successfully");
-});
 
 //For FCC testing purposes
 fccTestingRoutes(app);
@@ -75,16 +70,8 @@ app.use(function(req, res, next) {
     .send('Not Found');
 });
 
-async function conn() {
-  const mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
-
-  return mongoose.connect(uri, { useUnifiedTopology: true, useNewUrlParser: true });
-}
-
 //Start our server and tests!
-conn().then(() => {
-  app.listen(process.env.PORT || 3000, function () {
+connect().then(() => app.listen(process.env.PORT || 3000, function () {
     console.log('Your app is listening on port 3000');
     if(process.env.NODE_ENV==='test') {
       console.log('Running Tests...');
@@ -97,7 +84,7 @@ conn().then(() => {
         }
       }, 1500);
     }
-  });
-})
+  })
+)
 
 module.exports = app; //for testing
