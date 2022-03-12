@@ -22,12 +22,26 @@ module.exports = function (app) {
     // Idk it's required
     const reported = false;
 
-    const model = Thread({ name: board, text, delete_password, replies, reported });
+    const model = Thread({ board, text, delete_password, replies, reported });
     await model.save()
 
     return response.json({ data: { text, delete_password, board, replies, reported }, ok: true })
   });
   
+  app.route('/api/threads/:board').get(async (request, response) => {
+    const board = request.params.board
+
+    // The 10 threads to find with the most recent bumped comments 
+    const threads = await Thread.find({ board }, { reported: 0, delete_password: 0})
+        .populate({
+          path: 'replies',
+          options: { limit: 3, sort: { created_on: -1 }}
+        })
+        .sort({ bumped_on: -1 })
+        .limit(10)
+
+    return response.json(threads)
+  })
 
   // You can send a POST request to /api/replies/{board} with form data including text, delete_password, & thread_id.
   // This will update the bumped_on date to the comment's date. 
