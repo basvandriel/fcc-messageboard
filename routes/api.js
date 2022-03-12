@@ -56,6 +56,7 @@ module.exports = function (app) {
     const thread = await Thread.findById(thread_id, { reported: 0, delete_password: 0})
         .populate({
           path: 'replies',
+          options: { select: '-reported -delete_password'}
         })
         .sort({ bumped_on: -1 })
 
