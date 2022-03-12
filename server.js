@@ -10,6 +10,7 @@ const runner            = require('./test-runner');
 
 const helmet = require('helmet')
 const mongoose = require('mongoose')
+const { MongoMemoryServer } = require('mongodb-memory-server');
 
 const app = express();
 
@@ -54,7 +55,6 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
-mongoose.connect(process.env.DB, { useUnifiedTopology: true, useNewUrlParser: true });
 
 const connection = mongoose.connection;
 
@@ -75,20 +75,29 @@ app.use(function(req, res, next) {
     .send('Not Found');
 });
 
+async function conn() {
+  const mongod = await MongoMemoryServer.create();
+  const uri = mongod.getUri();
+
+  return mongoose.connect(uri, { useUnifiedTopology: true, useNewUrlParser: true });
+}
+
 //Start our server and tests!
-const listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
-  if(process.env.NODE_ENV==='test') {
-    console.log('Running Tests...');
-    setTimeout(function () {
-      try {
-        runner.run();
-      } catch(e) {
-        console.log('Tests are not valid:');
-        console.error(e);
-      }
-    }, 1500);
-  }
-});
+conn().then(() => {
+  app.listen(process.env.PORT || 3000, function () {
+    console.log('Your app is listening on port 3000');
+    if(process.env.NODE_ENV==='test') {
+      console.log('Running Tests...');
+      setTimeout(function () {
+        try {
+          runner.run();
+        } catch(e) {
+          console.log('Tests are not valid:');
+          console.error(e);
+        }
+      }, 1500);
+    }
+  });
+})
 
 module.exports = app; //for testing
