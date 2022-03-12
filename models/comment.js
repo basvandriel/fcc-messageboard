@@ -13,6 +13,7 @@ const schema = new Schema({
     text: String,
     delete_password: String,
     reported: Boolean,
+    reply_id: String,
     thread_id: { type: Schema.Types.ObjectId, ref: 'Thread' },
     created_on: Timestamp
 })

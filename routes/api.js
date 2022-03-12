@@ -115,9 +115,8 @@ module.exports = function (app) {
     }
     
     const payload = await Comment.findOneAndUpdate({ _id: reply_id, thread_id, delete_password, board }, {
-      _id: "[deleted]"
+      reply_id: "[deleted]"
     })
-    // const payload = await Thread.findOneAndDelete({ _id: thread_id, delete_password, board });
 
     return response.send(!payload ? "incorrect password" : "success");
   })
