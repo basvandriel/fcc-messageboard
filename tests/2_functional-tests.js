@@ -80,4 +80,27 @@ suite('Functional Tests', function() {
 
         assert.equal(result.status, 200)
     })
+
+    test('app.route("/api/threads/:board").put - reports a thread', async () => {
+        const thread = await Thread.findOne({ board: "fcc_testing" });
+
+        const result = await chai.request(server).put(`/api/threads/fcc_testing`).send({
+            report_id: thread._id.toString(),
+        })
+        assert.equal(result.status, 200);
+    });
+
+    test('app.route("/api/replies/:board").put', async () => {
+        const thread = await Thread.findOne({ board: "fcc_testing" });
+        const comment = await Comment.findOne({
+            thread_id: thread._id.toString()
+        });
+
+        const result = await chai.request(server).put(`/api/threads/fcc_testing`).send({
+            thread_id: thread._id.toString(),
+            reply_id: comment._id.toString(),
+        })
+
+        assert.equal(result.status, 200)
+    })
 });
