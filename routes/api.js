@@ -43,6 +43,26 @@ module.exports = function (app) {
     return response.json(threads)
   })
 
+  // You can send a GET request to /api/replies/{board}?thread_id={thread_id}. 
+  // Returned will be the entire thread with all its replies, also excluding the same fields from the client as the previous test.
+  app.route('/api/replies/:board').get(async (request, response) => {
+    const board = request.params.board
+    const thread_id = request.query.thread_id;
+
+    if (!board || !thread_id) {
+      return response.json("board or thread_id param not found")
+    }
+
+    // The 10 threads to find with the most recent bumped comments 
+    const threads = await Thread.findById(thread_id, { reported: 0, delete_password: 0})
+        .populate({
+          path: 'replies',
+        })
+        .sort({ bumped_on: -1 })
+
+    return response.json(threads)
+  })
+
   // You can send a POST request to /api/replies/{board} with form data including text, delete_password, & thread_id.
   // This will update the bumped_on date to the comment's date. 
   // In the thread's replies array, an object will be saved with at least the properties _id, text, created_on, delete_password, & reported.
