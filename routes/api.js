@@ -100,16 +100,7 @@ module.exports = function (app) {
     }
     
     const payload = await Thread.findOneAndDelete({ _id: thread_id, delete_password, board });
-    
-    console.log(payload)
 
-    if (!payload) {
-      return response.json("incorrect password")
-    }
-
-    // Also delete the referenced replies
-    await Comment.deleteMany({ thread_id })
-
-    return response.json("success");
+    return response.send(!payload ? "incorrect password" : "success");
   })
 };
