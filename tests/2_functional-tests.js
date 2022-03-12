@@ -103,4 +103,18 @@ suite('Functional Tests', function() {
 
         assert.equal(result.status, 200)
     })
+
+    test("app.route('/b/:board/').get", async () => {
+        const result = await chai.request(server).get(`/b/fcc_testing`);
+        assert.equal(result.status, 200)
+    });
+
+    test("app.route('/b/:board/:threadid').get", async () => {
+        const thread = await Thread.findOne({ board: "fcc_testing" });
+        const thread_id = thread._id.toString()
+
+        const result = await chai.request(server).get("/b/fcctesting/" + thread_id)
+
+        assert.equal(result.status, 200)
+    })
 });
