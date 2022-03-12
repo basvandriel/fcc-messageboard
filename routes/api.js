@@ -53,14 +53,13 @@ module.exports = function (app) {
       return response.json("board or thread_id param not found")
     }
 
-    // The 10 threads to find with the most recent bumped comments 
-    const threads = await Thread.findById(thread_id, { reported: 0, delete_password: 0})
+    const thread = await Thread.findById(thread_id, { reported: 0, delete_password: 0})
         .populate({
           path: 'replies',
         })
         .sort({ bumped_on: -1 })
 
-    return response.json(threads)
+    return response.json(thread)
   })
 
   // You can send a POST request to /api/replies/{board} with form data including text, delete_password, & thread_id.
