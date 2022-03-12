@@ -120,4 +120,19 @@ module.exports = function (app) {
 
     return response.send(!payload ? "incorrect password" : "success");
   })
+
+  // You can send a PUT request to /api/threads/{board} and pass along the thread_id. 
+  // Returned will be the string reported. The reported value of the thread_id will be changed to true.
+  app.route("/api/threads/:board").put(upload.none(), async (request, response) => {
+    const board = request.params.board
+    const { thread_id } = request.body
+
+    if(!thread_id || !board) {
+      return response.json("thread_id || board not found")
+    }
+    await Thread.findByIdAndUpdate(thread_id, { reported: true })
+
+    return response.send("reported")
+  })
+
 };
