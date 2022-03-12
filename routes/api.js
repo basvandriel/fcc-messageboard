@@ -35,7 +35,7 @@ module.exports = function (app) {
     const threads = await Thread.find({ board }, { reported: 0, delete_password: 0})
         .populate({
           path: 'replies',
-          options: { limit: 3, sort: { created_on: -1 }}
+          options: { limit: 3, sort: { created_on: -1 }, select: '-reported -delete_password'}
         })
         .sort({ bumped_on: -1 })
         .limit(10)
@@ -74,7 +74,8 @@ module.exports = function (app) {
      */
     if (!thread) return response.json("Thread not found")
 
-    const comment = Comment({ text, delete_password, thread_id })
+    const reported = false
+    const comment = Comment({ text, delete_password, reported, thread_id })
     await comment.save(); 
 
     thread.replies.push(comment);

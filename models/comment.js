@@ -12,7 +12,8 @@ const Timestamp = require('../lib/timestamp')
 const schema = new Schema({
     text: String,
     delete_password: String,
-    thread_id : { type: Schema.Types.ObjectId, ref: 'Thread' },
+    reported: Boolean,
+    thread_id: { type: Schema.Types.ObjectId, ref: 'Thread' },
     created_on: Timestamp
 })
 
